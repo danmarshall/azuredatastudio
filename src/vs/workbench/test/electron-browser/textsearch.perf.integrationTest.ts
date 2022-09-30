@@ -7,6 +7,7 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import * as minimist from 'minimist';
 import { Emitter, Event } from 'vs/base/common/event';
+import { staticObservableValue } from 'vs/base/common/observableValue';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -183,7 +184,7 @@ suite.skip('TextSearch performance (integration)', () => {
 
 class TestTelemetryService implements ITelemetryService {
 	public _serviceBrand: undefined;
-	public telemetryLevel = TelemetryLevel.USAGE;
+	public telemetryLevel = staticObservableValue(TelemetryLevel.USAGE);
 	public sendErrorTelemetry = true;
 
 	public events: any[] = [];

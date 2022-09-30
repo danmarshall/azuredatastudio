@@ -199,7 +199,7 @@ export class ExperimentService implements ITASExperimentService {
 		@IProductService private productService: IProductService
 	) {
 
-		if (productService.tasConfig && this.experimentsEnabled && this.telemetryService.telemetryLevel === TelemetryLevel.USAGE) {
+		if (productService.tasConfig && this.experimentsEnabled && this.telemetryService.telemetryLevel.value === TelemetryLevel.USAGE) {
 			this.tasClient = this.setupTASClient();
 		}
 

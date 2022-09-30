@@ -21,7 +21,7 @@ export class CustomEndpointTelemetryService implements ICustomEndpointTelemetryS
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@ILoggerService private readonly loggerService: ILoggerService,
-		@IEnvironmentService private readonly environmentService: IEnvironmentService,
+		@IEnvironmentService private readonly environmentService: IEnvironmentService
 	) { }
 
 	private async getCustomTelemetryService(endpoint: ITelemetryEndpoint): Promise<ITelemetryService> {

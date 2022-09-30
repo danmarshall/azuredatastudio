@@ -231,6 +231,33 @@ export class ExpectedError extends Error {
 	readonly isExpected = true;
 }
 
+/**
+ * Error that when thrown won't be logged in telemetry as an unhandled error.
+ */
+export class ErrorNoTelemetry extends Error {
+	override readonly name: string;
+
+	constructor(msg?: string) {
+		super(msg);
+		this.name = 'CodeExpectedError';
+	}
+
+	public static fromError(err: Error): ErrorNoTelemetry {
+		if (err instanceof ErrorNoTelemetry) {
+			return err;
+		}
+
+		const result = new ErrorNoTelemetry();
+		result.message = err.message;
+		result.stack = err.stack;
+		return result;
+	}
+
+	public static isErrorNoTelemetry(err: Error): err is ErrorNoTelemetry {
+		return err.name === 'CodeExpectedError';
+	}
+}
+
 export interface IErrorOptions {
 	actions?: readonly IAction[];
 }

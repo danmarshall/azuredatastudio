@@ -47,6 +47,7 @@ import { ClassifiedEvent, StrictPropertyCheck, GDPRClassification } from 'vs/pla
 import { basename } from 'vs/base/common/resources';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { staticObservableValue } from 'vs/base/common/observableValue';
 
 export class SimpleModel implements IResolvedTextEditorModel {
 
@@ -574,7 +575,7 @@ export class SimpleResourcePropertiesService implements ITextResourcePropertiesS
 export class StandaloneTelemetryService implements ITelemetryService {
 	declare readonly _serviceBrand: undefined;
 
-	public telemetryLevel = TelemetryLevel.NONE;
+	public telemetryLevel = staticObservableValue(TelemetryLevel.NONE);
 	public sendErrorTelemetry = false;
 
 	public setEnabled(value: boolean): void {

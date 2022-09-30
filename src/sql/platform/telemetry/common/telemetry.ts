@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { ITelemetryInfo } from 'vs/platform/telemetry/common/telemetry';
 
 export const IAdsTelemetryService = createDecorator<IAdsTelemetryService>('adsTelemetryService');
 
@@ -53,18 +54,10 @@ export interface ITelemetryEvent {
 	withServerInfo(serverInfo?: azdata.ServerInfo): ITelemetryEvent;
 }
 
-export interface ITelemetryInfo {
-	sessionId: string;
-	machineId: string;
-	instanceId: string;
-}
-
 export interface IAdsTelemetryService {
 
 	// ITelemetryService functions
 	_serviceBrand: undefined;
-
-	setEnabled(value: boolean): void;
 
 	getTelemetryInfo(): Promise<ITelemetryInfo>;
 

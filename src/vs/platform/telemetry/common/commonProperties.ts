@@ -9,9 +9,6 @@ import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IFileService } from 'vs/platform/files/common/files';
 
-import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
-const productObject = product; // {{SQL CARBON EDIT}}
-
 function getPlatformDetail(hostname: string): string | undefined {
 	if (platform === Platform.Linux && /^penguin(\.|$)/i.test(hostname)) {
 		return 'chromebook';
@@ -28,11 +25,12 @@ export async function resolveCommonProperties(
 	commit: string | undefined,
 	version: string | undefined,
 	machineId: string | undefined,
-	msftInternalDomains: string[] | undefined,
+	isInternalTelemetry: boolean,
 	installSourcePath: string,
 	product?: string
-): Promise<{ [name: string]: string | boolean | undefined; }> {
-	const result: { [name: string]: string | boolean | undefined; } = Object.create(null);
+): Promise<{ [name: string]: string | boolean | undefined }> {
+	const result: { [name: string]: string | boolean | undefined } = Object.create(null);
+
 	// __GDPR__COMMON__ "common.machineId" : { "endPoint": "MacAddressHash", "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }
 	result['common.machineId'] = machineId;
 	// __GDPR__COMMON__ "sessionID" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
@@ -50,14 +48,11 @@ export async function resolveCommonProperties(
 	// __GDPR__COMMON__ "common.nodeArch" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
 	result['common.nodeArch'] = arch;
 	// __GDPR__COMMON__ "common.product" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
-	result['common.product'] = productObject.nameShort || 'desktop'; // {{SQL CARBON EDIT}}
-	result['common.application.name'] = productObject.nameLong; // {{SQL CARBON EDIT}}
-	result['quality'] = productObject.quality || 'dev'; // {{SQL CARBON EDIT}} Add quality
+	result['common.product'] = product || 'desktop';
 
-	const msftInternal = verifyMicrosoftInternalDomain(msftInternalDomains || []);
-	if (msftInternal) {
+	if (isInternalTelemetry) {
 		// __GDPR__COMMON__ "common.msftInternal" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
-		result['common.msftInternal'] = msftInternal;
+		result['common.msftInternal'] = isInternalTelemetry;
 	}
 
 	// dynamic properties which value differs on each call
