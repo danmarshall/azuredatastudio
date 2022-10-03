@@ -54,6 +54,8 @@ import { DEFAULT_NB_LANGUAGE_MODE, INTERACTIVE_LANGUAGE_MODE, INTERACTIVE_PROVID
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -202,7 +204,9 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IEditorService private _editorService: IEditorService,
 		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IQuickInputService private _quickInputService: IQuickInputService,
+		@IHostService private _hostService: IHostService,
 	) {
 		super();
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
@@ -526,6 +530,25 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 		descriptor.instance = standardKernels;
 		this._providerToStandardKernels.set(providerUpperCase, descriptor);
+
+		// If the provider is not one of the default options, then prompt them to restart
+		// ADS to pick up the new kernels for existing notebooks
+		if (provider.provider !== SQL_NOTEBOOK_PROVIDER && provider.provider !== JUPYTER_PROVIDER_ID) {
+			let picks = [{
+				id: '0',
+				label: localize('notebook.confirmYes', "Yes")
+			}, {
+				id: '1',
+				label: localize('notebook.confirmNo', "No")
+			}];
+			this._quickInputService.pick(picks, { placeHolder: localize('notebook.promptRestart', "New notebook kernels have been installed. Would you like to reload Azure Data Studio to use them?"), canPickMany: false })
+				.then(result => {
+					if (result.id === '0') {
+						this._hostService.reload().catch(error => onUnexpectedError(error));
+					}
+				})
+				.catch(error => onUnexpectedError(error));
+		}
 	}
 
 	getSupportedFileExtensions(): string[] {
