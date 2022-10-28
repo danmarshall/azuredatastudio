@@ -30,7 +30,13 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 	}
 
 	async getAssessments(ownerUri: string, databases: string[]): Promise<mssql.AssessmentResult | undefined> {
-		let params: contracts.SqlMigrationAssessmentParams = { ownerUri: ownerUri, databases: databases };
+		let xEventsFolder = '';		// TO-DO: implement UI file picker to enable XEvents assessment
+		let params: contracts.SqlMigrationAssessmentParams = {
+			ownerUri: ownerUri,
+			databases: databases,
+			xEventsFilesFolderPath: xEventsFolder
+		};
+
 		try {
 			return this.client.sendRequest(contracts.GetSqlMigrationAssessmentItemsRequest.type, params);
 		}
