@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ErrorAction, CloseAction } from 'vscode-languageclient';
-import TelemetryReporter from 'vscode-extension-telemetry';
+import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
 import * as vscode from 'vscode';
 
 import * as constants from '../common/constants';
@@ -71,7 +71,7 @@ export class LanguageClientErrorHandler {
 
 
 export class Telemetry {
-	private static reporter: TelemetryReporter;
+	private static reporter: AdsTelemetryReporter;
 	private static disabled: boolean;
 
 	/**
@@ -92,7 +92,7 @@ export class Telemetry {
 				return;
 			}
 			let packageInfo = vscode.extensions.getExtension('Microsoft.import').packageJSON;
-			this.reporter = new TelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
+			this.reporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 		}
 	}
 
